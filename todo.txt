@@ -1,0 +1,46 @@
+*****************Read************************
+Note: Mining can be used for private networks, but mainnet
+    requires a consensus client since ethereum switch to proof-of-stake
+    Geth and a consensus client (such as Prysm, a Go POS implementation) and maintain ethereum blockchain
+    Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
+    Consider running Prysm alongside Geth for the private network
+
+
+**********************Steps to set up private miner network*****************
+
+1. Make genesis.json
+
+2. Make data directories for all nodes (regular and miner)
+
+3. Initialized nodes using genesis.json
+
+4. Generate bootnode key with 'bootnode' and the following options:
+    -genkey         <output name for bootnode key>
+
+5. Start bootnode with 'bootnode' and the following options:
+    -nodekey        <bootnode key>
+    -addr           :<port number> (eg, :30305)
+
+6. Start node with 'geth' and the following options:
+    --port          <port number>
+    --authrpc.port  <port number> (is this needed if mining?  Or only for clique signers?)
+    --networkid     <network number defined in genesis.json>
+    --unlock        <public address of account to unlock>
+    --password      <text file with password>
+    --bootnodes     <bootnode record>
+    --datadir       <directory of datastore>
+
+7. Start miner node with these extra options:
+    --mine
+    --miner.threads=1
+    --miner.etherbase=0x00000....
+
+Write scripts to start and run network (2 regular nodes and 1 miner and bootstrapping node)
+
+*******************Interact with private miner network using Metamask********
+******************Compile and run contract on private miner network*********
+******************Interact with smart contracts using Metamask**********
+******************Set up private proof-of-stake network******************
+Use Geth and Prysm
+****************************Oracles**************************************
+***************************Defi**************************************
