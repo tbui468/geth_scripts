@@ -12,12 +12,13 @@ def stop_process(port, prot):
 
 def stop_all():
     #stop all processes on ports used for network
-    stop_process("30305", "udp") #bootstrap
-    stop_process("30306", "tcp") #node 1
-    stop_process("30307", "tcp")
-    stop_process("30308", "tcp") #node2
-    stop_process("30309", "tcp")
-    stop_process("30310", "tcp") #miner
-    stop_process("30311", "tcp")
+    stop_process("30305", "udp") #bootstrap node
+    stop_process("30306", "tcp") #node 1 execution client
+    stop_process("30307", "tcp") #node 1 consensus client (not used)
+    stop_process("30308", "tcp") #node 2 execution client
+    stop_process("30309", "tcp") #node 2 consensus client (not used)
+    stop_process("30310", "tcp") #miner 1 execution client
+    stop_process("30311", "tcp") #miner 1 consensus client (not used)
+    stop_process("8545", "tcp") #json-rpc server on node 1
 
 stop_all()

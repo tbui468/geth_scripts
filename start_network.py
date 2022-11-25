@@ -30,7 +30,8 @@ while True:
 
 
 #start other nodes in background
-subprocess.run("geth --datadir node1 --port 30306 --authrpc.port 30307 --bootnodes enode://cb8f896cfba8ee5530de9ac7db42c07a61e4f2dc4cb25595fa4371886a19de193bee1fba7ae7a5b9f97198389527231aba8ed58c43b074dc5a04590b51b641ca@127.0.0.1:0?discport=30305 --networkid 1 --unlock 0xD8b3A2eBa89Bc06A2bDBDFa41da277Ac2ace4B7B --password node1/password.txt &", shell=True)
+#keep node1 account locked and set --http flag to use with Metamask (port 8545)
+subprocess.run("geth --datadir node1 --port 30306 --authrpc.port 30307 --bootnodes enode://cb8f896cfba8ee5530de9ac7db42c07a61e4f2dc4cb25595fa4371886a19de193bee1fba7ae7a5b9f97198389527231aba8ed58c43b074dc5a04590b51b641ca@127.0.0.1:0?discport=30305 --networkid 1 &", shell=True)
 
 subprocess.run("geth --datadir node2 --port 30308 --authrpc.port 30309 --bootnodes enode://cb8f896cfba8ee5530de9ac7db42c07a61e4f2dc4cb25595fa4371886a19de193bee1fba7ae7a5b9f97198389527231aba8ed58c43b074dc5a04590b51b641ca@127.0.0.1:0?discport=30305 --networkid 1 --unlock 0x9482fe26D589a41008561a853f9bf02982d46CD0 --password node2/password.txt &", shell=True)
 
