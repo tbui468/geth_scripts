@@ -1,8 +1,8 @@
 *****************Read************************
-Read Bitcoin and Cryptocurrency technologies
-Messari BlockChain report
-Reread Mastering Bitcoin
-Reread Mastering Ethereum
+Read Bitcoin and Cryptocurrency technologies - foundation
+Messari BlockChain report - business side of things
+Reread Mastering Bitcoin - technical details/foundation
+Reread Mastering Ethereum - tecnnical details/foundation
 Vitalik Buterin blog
 
 Note: Mining can be used for private networks, but mainnet
@@ -11,19 +11,18 @@ Note: Mining can be used for private networks, but mainnet
     Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
     Consider running Prysm alongside Geth for the private network
 
-******************Test json-rpc******************************************
-Remove miner1 node - not really necessary
-Make both node1 and node2 miners (just set threads for mining)
-Make node1 account locked and set json-rpc server to use http to allow testing with MetaMask
-Make node2 account unlocked and set json-rpc server to ipc (default already) to deploy contracts
+******************Test Contracts******************************************
+Interact with more complex contract
+    methods with parameters
+    methods that change blockchain state
+    Ballot Contract
 
-Deploy contracts with node 2
-Test with node 2 with IPC
-Test with node 1 using metamask (manual testing...?  Or could we automate this too?)
+******************Interact with Ballot Contract using Metamask**********
+May need to set up basic javascript frontend for this
 
-******************Compile and run contract on private miner network*********
-******************Interact with smart contracts using Metamask**********
 ******************Set up private proof-of-stake network******************
 Use Geth and Prysm
+
 ****************************Oracles**************************************
+
 ***************************Defi**************************************

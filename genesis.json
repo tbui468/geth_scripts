@@ -16,7 +16,7 @@
         "grayGlacierBlock": 0
     },
     "difficulty": "1",
-    "gasLimit": "8000000",
+    "gasLimit": "1000000000000000000",
     "alloc": {
         "D8b3A2eBa89Bc06A2bDBDFa41da277Ac2ace4B7B": { "balance": "1000000000000000000" },
         "9482fe26D589a41008561a853f9bf02982d46CD0": { "balance": "2000000000000000000" }

@@ -17,8 +17,8 @@ def stop_all():
     stop_process("30307", "tcp") #node 1 consensus client (not used)
     stop_process("30308", "tcp") #node 2 execution client
     stop_process("30309", "tcp") #node 2 consensus client (not used)
-    stop_process("30310", "tcp") #miner 1 execution client
-    stop_process("30311", "tcp") #miner 1 consensus client (not used)
+    stop_process("30310", "tcp") #node 3 execution client
+    stop_process("30311", "tcp") #node 3 consensus client (not used)
     stop_process("8545", "tcp") #json-rpc server on node 1
 
 stop_all()
