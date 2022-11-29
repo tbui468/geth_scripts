@@ -1,8 +1,8 @@
-*****************Read************************
+************************Read************************
 Read Bitcoin and Cryptocurrency technologies - foundation
 Messari BlockChain report - business side of things
 Reread Mastering Bitcoin - technical details/foundation
-Reread Mastering Ethereum - tecnnical details/foundation
+Reread Mastering Ethereum - technical details/foundation
 Vitalik Buterin blog
 
 Note: Mining can be used for private networks, but mainnet
@@ -11,18 +11,29 @@ Note: Mining can be used for private networks, but mainnet
     Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
     Consider running Prysm alongside Geth for the private network
 
-******************Test Contracts******************************************
+**************************Test Contracts*******************************
 Interact with more complex contract
-    methods with parameters
-    methods that change blockchain state
-    Ballot Contract
+    methods that change blockchain state - need to send transaction
+        can call be used to change blockchain state?
+    Ballot Contract - write python tests for Ballot functionality
+
+**************Decode string return value from contract method call*********************
+hex -> string
 
 ******************Interact with Ballot Contract using Metamask**********
 May need to set up basic javascript frontend for this
+
+******************Use eth_utils to manually sign transactions***********
+Bypass the geth accounts stuff, and understand what metamask is doing behind the scenes
+    probably a good idea to undestand (at least understand usage) of one of the cryptographic primitives
+
+    digital signatures in ethereum - does it use ECDSA?
 
 ******************Set up private proof-of-stake network******************
 Use Geth and Prysm
 
 ****************************Oracles**************************************
 
-***************************Defi**************************************
+******************************Defi**************************************
+
+****************************Test Nets***********************************
