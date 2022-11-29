@@ -10,9 +10,8 @@ contract HelloWorld {
         return _a + _b;
     }
 
-    function setN(uint _n) public pure returns (uint256) {
-        uint256 t = _n;
-        return t;
+    function setN(uint _n) public {
+        n = _n;
     }
 
     function setS(string calldata _s) public {

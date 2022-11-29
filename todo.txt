@@ -11,14 +11,29 @@ Note: Mining can be used for private networks, but mainnet
     Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
     Consider running Prysm alongside Geth for the private network
 
+***********************Structured Courses********************************
+CryptoZombies
+Ethernauts
+
 **************************Test Contracts*******************************
+Test encoding of multiple strings (dynamic) and static arguments
+
+Does this work with bytes32?  Or is the encoding format different?
+
+Write code to decode strings from blockchain
+
+Encode array arguments
+
+Decode array returns (????)
+
 Interact with more complex contract
-    methods that change blockchain state - need to send transaction
-        can call be used to change blockchain state?
     Ballot Contract - write python tests for Ballot functionality
 
-**************Decode string return value from contract method call*********************
-hex -> string
+***********************KickStarter System****************************
+Send money to account
+if amount reach, project is funded
+else if time limit reached without full funding, sent money is refunded
+Would still need a third-party to settle disputes (eg, project spent all money without delivering promise)
 
 ******************Interact with Ballot Contract using Metamask**********
 May need to set up basic javascript frontend for this
