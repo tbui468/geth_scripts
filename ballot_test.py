@@ -1,4 +1,13 @@
 from deploy_contract import *
 
-signer_addr, contract_addr = deploy_contract("Ballot.sol", ["testing"])
 
+contract = Contract("Ballot.sol", ["bird", 242, "turtle"])
+r = contract.call("name", [])
+print(r)
+r = contract.call("short", [])
+print(r)
+r = contract.call("chairperson", [])
+print(r)
+
+r = contract.call("all", [])
+print(r)

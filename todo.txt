@@ -11,16 +11,35 @@ Note: Mining can be used for private networks, but mainnet
     Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
     Consider running Prysm alongside Geth for the private network
 
-***********************Structured Courses********************************
+
+**********************Foundations*****************************
+Finish reading Bitcoin and Cryptocurrency technologies
+Watch video on building a mini-cryptocurrency in Ruby
+Without referring to video, build a mini-cryptocurrency in Python
+    try using hash functions/dsa from eth_utils so that we can skip the geth signers
+Ethereum in 25 minutes video
+Mastering Ethereum Book
+Build a mini-ethereum blockchain/virtual machine in python
+Remake mini-ethereum to use proof-of-stake
+
+***********************Structured Smart Contract Courses********************************
 CryptoZombies
+    pw: catdoglion
 Ethernauts
 
-**************************Test Contracts*******************************
-Test encoding of multiple strings (dynamic) and static arguments
+**************************Ballot Contract*******************************
+Continue working Ballot contract
+    arrays
 
-Does this work with bytes32?  Or is the encoding format different?
+#send json-rpc to EVM here
 
-Write code to decode strings from blockchain
+decoded_results_list = decode_results(encoded_results_obj)
+
+encode/decode:
+    bytes32
+    arrays
+    address
+    structs
 
 Encode array arguments
 
@@ -29,11 +48,19 @@ Decode array returns (????)
 Interact with more complex contract
     Ballot Contract - write python tests for Ballot functionality
 
-***********************KickStarter System****************************
-Send money to account
-if amount reach, project is funded
-else if time limit reached without full funding, sent money is refunded
-Would still need a third-party to settle disputes (eg, project spent all money without delivering promise)
+***********************Ideas****************************
+KickStarter DAO
+    Send money to account
+    if amount reach, project is funded
+    else if time limit reached without full funding, sent money is refunded
+    Would still need a third-party to settle disputes (eg, project spent all money without delivering promise)
+
+Staking-as-a-Service DAO
+    Stakers send ether to stake pool described by smart contract
+    Owner of server running consensus client takes a small cut of profits, remaining sent to stakers
+
+Uniswap Defi
+    Implement uniswap paper(s)
 
 ******************Interact with Ballot Contract using Metamask**********
 May need to set up basic javascript frontend for this
