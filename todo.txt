@@ -28,12 +28,28 @@ CryptoZombies
 Ethernauts
 
 **************************Ballot Contract*******************************
-Continue working Ballot contract
-    arrays
+Need to decode events using abi
+    currently just sending back raw data
+    we need to know the event name in order to get the abi to decode it
+    hash the event name + parameters (include parenthesese and commas) and compare hash to 'topics' list inside of logs
+    Need to be able to decode multiple events
+    So each event in a method call will produce its own log inside the log list - what are topics?
+    Even if the same event is emitted in the same method, a new log will be produced - is the topics list ever larger than 1?
+
+Look into async and await in python to do the json-rpc requests to the blockchain
+
+Seems like encoding dynamic data for arguments is different from decoding dynamic data for returns
+    in arguments, the dynamic data offset is computed from the offset
+    in returns, the dynamic daeta offset is computed from the beginning of the returns
+
+Get these two functions working in Solidity
+    append_num - changes state of contract - may need gas estimation here
+        can we just use the same call method?  No
+    append_num_with_return - change state of contract and also return a value - !!! Seems like this is not possible
+        need events for this NOT return values
+    append_nums - argument is variable length array (how to encode this?)
 
 #send json-rpc to EVM here
-
-decoded_results_list = decode_results(encoded_results_obj)
 
 encode/decode:
     bytes32

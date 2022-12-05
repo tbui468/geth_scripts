@@ -28,15 +28,37 @@ class Contract():
         gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "data": binary}])
         self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "gas": gas_est['result'], "data": binary}])['result']['contractAddress']
 
+    def read(self, method_name, args):
+        return self.call(method_name, args, False)
 
-    def call(self, method_name, args):
+    def write(self, method_name, args):
+        return self.call(method_name, args, True)
+
+    def call_raw(self, method_name, args, write):
         encoded_method_sig = self._encode_method_sig(method_name)
         method_abi = self._get_method_abi(method_name)
         encoded_args = self._encode_args(method_abi, args)
         call_data = "0x" + encoded_method_sig + encoded_args
 
-        call_result = send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
-        return self._decode_returns(method_abi, call_result['result'])
+        if write:
+            gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "to": self.contract_addr, "data": call_data}])
+            call_result = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}])
+        else:
+            call_result = send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
+        return call_result
+
+    def call(self, method_name, args, write):
+        call_result = self.call_raw(method_name, args, write)
+        if 'result' in call_result and not isinstance(call_result['result'], dict): #read
+            return self._decode_returns(self._get_method_abi(method_name), call_result['result'])
+        elif 'result' in call_result and len(call_result['result']['logs']) != 0: #write with event
+            logs = call_result['result']['logs']
+            returns = []
+            for l in logs:
+                returns.append(self._decode_returns(self._get_event_abi(l['topics'][0]), l['data']))
+            return returns
+        else: #write with no event emitted
+            return []
 
     def _encode_method_sig(self, method_name):
         method_abi = self._get_method_abi(method_name)
@@ -54,6 +76,21 @@ class Contract():
         for method in self.abi:
             if method['type'] == 'function' and method['name'] == method_name:
                 return method
+
+    def _get_event_abi(self, event_hash):
+        for method in self.abi:
+            if method['type'] == 'event':
+                sig = method['name'] + '('
+                for p in method['inputs']:
+                    sig += p['type'] + ','
+                if sig[-1] == ',':
+                    sig = sig[:-1]
+                sig += ')'
+                h = '0x' + str(keccak(text=sig).hex())
+                if h == event_hash:
+                    return method
+
+        return None
 
     def _get_constructor_abi(self):
         for method in self.abi:
@@ -84,14 +121,15 @@ class Contract():
         return_list = []
         returns = returns[2:] #trim 0x
 
-        for i in range(len(method_abi['outputs'])):
-            typee = method_abi['outputs'][i]['type']
+        key = 'outputs' if method_abi['type'] == 'function' else 'inputs'
+
+        for i in range(len(method_abi[key])):
+            typee = method_abi[key][i]['type']
             offset = i * 64
 
             if typee == 'string':
                 byte_offset = decode_uint256(returns[offset: offset + 64])
-                string_start = offset + byte_offset * 2
-                return_list.append(decode_string(returns[string_start:]))
+                return_list.append(decode_string(returns[byte_offset * 2:]))
             elif typee == 'uint256':
                 return_list.append(decode_uint256(returns[offset: offset + 64]))
             elif typee == 'bytes32':
@@ -136,7 +174,6 @@ def decode_string(string):
 
 def decode_address(string):
     return "0x" + string[26:66]
-
 
 def send_ipc_request(method, params):
     global id_count, signer
