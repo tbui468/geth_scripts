@@ -28,12 +28,6 @@ class Contract():
         gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "data": binary}])
         self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "gas": gas_est['result'], "data": binary}])['result']['contractAddress']
 
-    def read(self, method_name, args):
-        return self.call(method_name, args, False)
-
-    def write(self, method_name, args):
-        return self.call(method_name, args, True)
-
     def call_raw(self, method_name, args, write):
         encoded_method_sig = self._encode_method_sig(method_name)
         method_abi = self._get_method_abi(method_name)
@@ -47,8 +41,8 @@ class Contract():
             call_result = send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
         return call_result
 
-    def call(self, method_name, args, write):
-        call_result = self.call_raw(method_name, args, write)
+    def call(self, method_name, args):
+        call_result = self.call_raw(method_name, args, not (self.__is_pure(method_name) or self.__is_view(method_name)))
         if 'result' in call_result and not isinstance(call_result['result'], dict): #read
             return self._decode_returns(self._get_method_abi(method_name), call_result['result'])
         elif 'result' in call_result and len(call_result['result']['logs']) != 0: #write with event
@@ -59,6 +53,12 @@ class Contract():
             return returns
         else: #write with no event emitted
             return []
+
+    def __is_pure(self, method_name):
+        return self._get_method_abi(method_name)['stateMutability'] == 'pure'
+
+    def __is_view(self, method_name):
+        return self._get_method_abi(method_name)['stateMutability'] == 'view'
 
     def _encode_method_sig(self, method_name):
         method_abi = self._get_method_abi(method_name)

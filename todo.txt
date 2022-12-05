@@ -28,19 +28,8 @@ CryptoZombies
 Ethernauts
 
 **************************Ballot Contract*******************************
-Need to decode events using abi
-    currently just sending back raw data
-    we need to know the event name in order to get the abi to decode it
-    hash the event name + parameters (include parenthesese and commas) and compare hash to 'topics' list inside of logs
-    Need to be able to decode multiple events
-    So each event in a method call will produce its own log inside the log list - what are topics?
-    Even if the same event is emitted in the same method, a new log will be produced - is the topics list ever larger than 1?
-
 Look into async and await in python to do the json-rpc requests to the blockchain
-
-Seems like encoding dynamic data for arguments is different from decoding dynamic data for returns
-    in arguments, the dynamic data offset is computed from the offset
-    in returns, the dynamic daeta offset is computed from the beginning of the returns
+    using a while loop to check for events is quite hacky
 
 Get these two functions working in Solidity
     append_num - changes state of contract - may need gas estimation here
