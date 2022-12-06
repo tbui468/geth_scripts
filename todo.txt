@@ -28,27 +28,10 @@ CryptoZombies
 Ethernauts
 
 **************************Ballot Contract*******************************
+
+
 Look into async and await in python to do the json-rpc requests to the blockchain
     using a while loop to check for events is quite hacky
-
-Get these two functions working in Solidity
-    append_num - changes state of contract - may need gas estimation here
-        can we just use the same call method?  No
-    append_num_with_return - change state of contract and also return a value - !!! Seems like this is not possible
-        need events for this NOT return values
-    append_nums - argument is variable length array (how to encode this?)
-
-#send json-rpc to EVM here
-
-encode/decode:
-    bytes32
-    arrays
-    address
-    structs
-
-Encode array arguments
-
-Decode array returns (????)
 
 Interact with more complex contract
     Ballot Contract - write python tests for Ballot functionality

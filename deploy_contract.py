@@ -28,21 +28,20 @@ class Contract():
         gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "data": binary}])
         self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "gas": gas_est['result'], "data": binary}])['result']['contractAddress']
 
-    def call_raw(self, method_name, args, write):
+    def call_raw(self, method_name, args):
         encoded_method_sig = self._encode_method_sig(method_name)
         method_abi = self._get_method_abi(method_name)
         encoded_args = self._encode_args(method_abi, args)
         call_data = "0x" + encoded_method_sig + encoded_args
 
-        if write:
-            gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "to": self.contract_addr, "data": call_data}])
-            call_result = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}])
+        if self.__is_pure(method_name) or self.__is_view(method_name):
+            return send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
         else:
-            call_result = send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
-        return call_result
+            gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "to": self.contract_addr, "data": call_data}])
+            return send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}])
 
     def call(self, method_name, args):
-        call_result = self.call_raw(method_name, args, not (self.__is_pure(method_name) or self.__is_view(method_name)))
+        call_result = self.call_raw(method_name, args)
         if 'result' in call_result and not isinstance(call_result['result'], dict): #read
             return self._decode_returns(self._get_method_abi(method_name), call_result['result'])
         elif 'result' in call_result and len(call_result['result']['logs']) != 0: #write with event
@@ -101,6 +100,8 @@ class Contract():
         dynamic_data = ""
         ret = ""
 
+        #TODO: this breaks if any of the arguments is a tuple/struct
+        #need to change offset by more than 64 bytes if argument is tuple
         for i in range(len(args)):
             typee = method_abi['inputs'][i]['type']
             arg = args[i]
@@ -112,6 +113,11 @@ class Contract():
                 ret += encode_uint256(arg)
             elif typee == 'bytes32':
                 ret += encode_bytes32(arg)
+            elif typee == 'bytes32[]':
+                ret += encode_uint256((len(args) - i) * 32 + len(dynamic_data))
+                dynamic_data += encode_uint256(len(arg))
+                for a in arg:
+                    dynamic_data += encode_bytes32(a)
             else:
                 print("Unsupported encoding type")
 
@@ -123,8 +129,9 @@ class Contract():
 
         key = 'outputs' if method_abi['type'] == 'function' else 'inputs'
 
-        for i in range(len(method_abi[key])):
-            typee = method_abi[key][i]['type']
+        i = 0
+        for r in method_abi[key]:
+            typee = r['type']
             offset = i * 64
 
             if typee == 'string':
@@ -136,8 +143,45 @@ class Contract():
                 return_list.append(decode_bytes32(returns[offset: offset + 64]))
             elif typee == 'address':
                 return_list.append(decode_address(returns[offset: offset + 64]))
+            elif typee == 'uint256[]':
+                arr = []
+                byte_offset = decode_uint256(returns[offset: offset + 64])
+                count = decode_uint256(returns[byte_offset * 2: byte_offset * 2 + 64])
+                for j in range(1, count + 1):
+                    element_offset = j * 64
+                    arr.append(decode_uint256(returns[byte_offset * 2 + element_offset: byte_offset * 2 + element_offset + 64]))
+                return_list.append(arr)
+            elif typee == 'tuple':
+                elements = []
+                for c in r['components']:
+                    tuple_offset = offset + len(elements) * 64
+                    if c['type'] == 'uint256':
+                        elements.append(decode_uint256(returns[tuple_offset: tuple_offset + 64]))
+                    elif c['type'] == 'bytes32':
+                        elements.append(decode_bytes32(returns[tuple_offset: tuple_offset + 64]))
+            
+                return_list.append(tuple(elements))
+            elif typee == 'tuple[]':
+                byte_offset = decode_uint256(returns[offset: offset + 64])
+                count = decode_uint256(returns[byte_offset * 2: byte_offset * 2 + 64])
+                arr = []
+                for j in range(0, count):
+                    elements = []
+                    for c in r['components']:
+                        tuple_offset = byte_offset * 2 + 64 + len(elements) * 64 + len(r['components']) * 64 * j
+                        if c['type'] == 'uint256':
+                            elements.append(decode_uint256(returns[tuple_offset: tuple_offset + 64]))
+                        elif c['type'] == 'bytes32':
+                            elements.append(decode_bytes32(returns[tuple_offset: tuple_offset + 64]))
+                    arr.append(tuple(elements))
+                return_list.append(arr)
             else:
                 print("Unsupported decoding type")
+
+            if typee == 'tuple':
+                i += len(r['components'])
+            else:
+                i += 1
 
         return return_list
 
