@@ -11,7 +11,6 @@ Note: Mining can be used for private networks, but mainnet
     Back in the day only an execution client was necessary, but the switch now requires a different consensus mechanism
     Consider running Prysm alongside Geth for the private network
 
-
 **********************Foundations*****************************
 Finish reading Bitcoin and Cryptocurrency technologies
 Watch video on building a mini-cryptocurrency in Ruby
@@ -28,7 +27,18 @@ CryptoZombies
 Ethernauts
 
 **************************Ballot Contract*******************************
+!!!Just start the miners in the python script itself
 
+Make more signers - 2 miners and 8 non-mining nodes
+
+Event for when user votes successfully
+Time to end vote and reveal results - should be set in constructor
+    If there's a tie between 2 or more proposals, then owner can cast a vote
+    Only allow owner vote if there's a tie at the end, and the vote must be on one of the tied proposals
+Voters can delegate vote to another account (that must also have voting rights already)
+    event for when delegation is successful
+Check for other features in Ballot contract
+Test theirs and test mine
 
 Look into async and await in python to do the json-rpc requests to the blockchain
     using a while loop to check for events is quite hacky

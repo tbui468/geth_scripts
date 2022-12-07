@@ -5,13 +5,28 @@ from eth_utils import keccak
 from binascii import hexlify, unhexlify
 
 id_count = 0
-signer = "node2"
+
+class Signer():
+    def __init__(self, name):
+        self.name = name #either node1, node2 or node3
+
+    def deploy(self, sol_file, args):
+        return Contract(sol_file, args, self.name)
+
+    def call(self, contract, method, args):
+        return contract.call(method, args, self.name)
+
+    def call_raw(self, contract, method, args):
+        return contract.call_raw(method, args, self.name)
+
+    def get_address(self):
+        return send_ipc_request("eth_coinbase", [], self.name)['result']
 
 class Contract():
-    def __init__(self, contract, args):
+    def __init__(self, contract, args, name):
         subprocess.run("cd contracts && ./solc " + contract + " --bin -o . --overwrite --abi --pretty-json", shell=True)
 
-        self.signer_addr = send_ipc_request("eth_coinbase", [])['result']
+        signer_addr = send_ipc_request("eth_coinbase", [], name)['result']
 
         binary = "0x"
         with open("./contracts/" + contract[:-4] + ".bin", "r") as f:
@@ -25,23 +40,26 @@ class Contract():
         constructor_abi = self._get_constructor_abi()
         binary += self._encode_args(constructor_abi, args)
 
-        gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "data": binary}])
-        self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "gas": gas_est['result'], "data": binary}])['result']['contractAddress']
+        gas_est = send_ipc_request("eth_estimateGas", [{"from": signer_addr, "data": binary}], name)
+        self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "gas": gas_est['result'], "data": binary}], name)['result']['contractAddress']
 
-    def call_raw(self, method_name, args):
+    def call_raw(self, method_name, args, name):
+        signer_addr = send_ipc_request("eth_coinbase", [], name)['result']
         encoded_method_sig = self._encode_method_sig(method_name)
         method_abi = self._get_method_abi(method_name)
         encoded_args = self._encode_args(method_abi, args)
         call_data = "0x" + encoded_method_sig + encoded_args
 
         if self.__is_pure(method_name) or self.__is_view(method_name):
-            return send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"])
+            return send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"], name)
         else:
-            gas_est = send_ipc_request("eth_estimateGas", [{"from": self.signer_addr, "to": self.contract_addr, "data": call_data}])
-            return send_ipc_request("eth_sendTransaction", [{"from": self.signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}])
+            gas_est = send_ipc_request("eth_estimateGas", [{"from": signer_addr, "to": self.contract_addr, "data": call_data}], name)
+            if 'error' in gas_est:
+                return gas_est
+            return send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}], name)
 
-    def call(self, method_name, args):
-        call_result = self.call_raw(method_name, args)
+    def call(self, method_name, args, name):
+        call_result = self.call_raw(method_name, args, name)
         if 'result' in call_result and not isinstance(call_result['result'], dict): #read
             return self._decode_returns(self._get_method_abi(method_name), call_result['result'])
         elif 'result' in call_result and len(call_result['result']['logs']) != 0: #write with event
@@ -50,6 +68,8 @@ class Contract():
             for l in logs:
                 returns.append(self._decode_returns(self._get_event_abi(l['topics'][0]), l['data']))
             return returns
+        elif 'error' in call_result:
+            return call_result
         else: #write with no event emitted
             return []
 
@@ -113,6 +133,8 @@ class Contract():
                 ret += encode_uint256(arg)
             elif typee == 'bytes32':
                 ret += encode_bytes32(arg)
+            elif typee == 'address':
+                ret += encode_address(arg)
             elif typee == 'bytes32[]':
                 ret += encode_uint256((len(args) - i) * 32 + len(dynamic_data))
                 dynamic_data += encode_uint256(len(arg))
@@ -216,11 +238,15 @@ def decode_string(string):
     length = decode_uint256(string[:64])
     return unhexlify(string[64: 64 + length * 2]).decode('utf-8')
 
-def decode_address(string):
-    return "0x" + string[26:66]
+def encode_address(string):
+    string = string[2:]
+    return "0" * 24 + string
 
-def send_ipc_request(method, params):
-    global id_count, signer
+def decode_address(string):
+    return "0x" + string[24:64]
+
+def send_ipc_request(method, params, name):
+    global id_count
     id_count += 1
 
     param_string = "["
@@ -236,16 +262,19 @@ def send_ipc_request(method, params):
     param_string += "]"
 
 
-    p = subprocess.Popen('echo \'{"jsonrpc":"2.0","method":"' + method + '","params":' + param_string + ',"id":' + str(id_count) + '}e\' | nc -U ./' + signer + '/geth.ipc', shell=True, stdout=subprocess.PIPE)
-    output = str(p.stdout.read()).split('\\n')
+    command = 'echo \'{"jsonrpc":"2.0","method":"' + method + '","params":' + param_string + ',"id":' + str(id_count) + '}\' | nc -U -q 1 ./' + name + '/geth.ipc'
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    output = p.stdout.read().decode('utf-8')
 
     #if a transaction is sent, get receipt of returned hash
     if method == "eth_sendTransaction":
         while True:
-            temp = send_ipc_request("eth_getTransactionReceipt", [json.loads(output[1])['result']])
+            if "error" in json.loads(output):
+                return json.loads(output)
+            temp = send_ipc_request("eth_getTransactionReceipt", [json.loads(output)['result']], name)
             if temp['result'] != None:
                 return temp
             id_count -= 1 #don't increment id while waiting for transaction to show up
 
-    return json.loads(output[1]) #index 0 is the error that kicks us out of the geth.ipc - probably should find a nicer way to exiting ;)
+    return json.loads(output)
 

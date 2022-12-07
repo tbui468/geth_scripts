@@ -19,6 +19,10 @@ def stop_all():
     stop_process("30309", "tcp") #node 2 consensus client (not used)
     stop_process("30310", "tcp") #node 3 execution client
     stop_process("30311", "tcp") #node 3 consensus client (not used)
+    stop_process("30312", "tcp") #node 3 consensus client (not used)
+    stop_process("30313", "tcp") #node 3 consensus client (not used)
+    stop_process("30314", "tcp") #node 3 consensus client (not used)
+    stop_process("30315", "tcp") #node 3 consensus client (not used)
     stop_process("8545", "tcp") #json-rpc server on node 1
 
 stop_all()

@@ -9,3 +9,11 @@ Node 2:
 Node 3:
     Public address of the key:   0x729DdedDb1f0388c0e15dc6A5427990259708674
     Path of the secret key file: node3/keystore/UTC--2022-11-24T01-08-03.652430200Z--729ddeddb1f0388c0e15dc6a5427990259708674
+
+Node 4:
+    Public address of the key:   0x58BC03D864625fd85252c8056D597CB1a670208E
+    Path of the secret key file: node4/keystore/UTC--2022-12-07T15-57-56.010508100Z--58bc03d864625fd85252c8056d597cb1a670208e
+
+Node 5:
+    Public address of the key:   0x0a8AfbC6F05D1091186f6963211Fc6E90d3C0467
+    Path of the secret key file: node5/keystore/UTC--2022-12-07T15-59-11.057003500Z--0a8afbc6f05d1091186f6963211fc6e90d3c0467
