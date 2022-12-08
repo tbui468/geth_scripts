@@ -1,5 +1,4 @@
-import subprocess
-import time
+import asyncio
 import json
 from eth_utils import keccak
 from binascii import hexlify, unhexlify
@@ -10,56 +9,68 @@ class Signer():
     def __init__(self, name):
         self.name = name #either node1, node2 or node3
 
-    def deploy(self, sol_file, args):
-        return Contract(sol_file, args, self.name)
+    async def deploy(self, sol_file, args):
+        c = Contract(sol_file, args, self.name)
+        await c.deploy()
+        return c
 
-    def call(self, contract, method, args):
-        return contract.call(method, args, self.name)
+    async def call(self, contract, method, args):
+        return await contract.call(method, args, self.name)
 
-    def call_raw(self, contract, method, args):
-        return contract.call_raw(method, args, self.name)
+    async def call_raw(self, contract, method, args):
+        return await contract.call_raw(method, args, self.name)
 
-    def get_address(self):
-        return send_ipc_request("eth_coinbase", [], self.name)['result']
+    async def get_address(self):
+        r = await send_ipc_request("eth_coinbase", [], self.name)
+        return r['result']
 
 class Contract():
     def __init__(self, contract, args, name):
-        subprocess.run("cd contracts && ./solc " + contract + " --bin -o . --overwrite --abi --pretty-json", shell=True)
+        self.contract = contract
+        self.args = args
+        self.name = name
 
-        signer_addr = send_ipc_request("eth_coinbase", [], name)['result']
+    async def deploy(self):
+        command = "cd contracts && ./solc " + self.contract + " --bin -o . --overwrite --abi --pretty-json"
+        await asyncio.create_subprocess_shell(command)
+
+        signer_addr = await send_ipc_request("eth_coinbase", [], self.name)
+        signer_addr = signer_addr['result']
 
         binary = "0x"
-        with open("./contracts/" + contract[:-4] + ".bin", "r") as f:
+        with open("./contracts/" + self.contract[:-4] + ".bin", "r") as f:
             binary += str(f.read())
 
         self.abi = []
-        with open("./contracts/" + contract[:-4] + ".abi", "r") as f:
+        with open("./contracts/" + self.contract[:-4] + ".abi", "r") as f:
             self.abi = json.loads(f.read())
 
 
         constructor_abi = self._get_constructor_abi()
-        binary += self._encode_args(constructor_abi, args)
+        binary += self._encode_args(constructor_abi, self.args)
 
-        gas_est = send_ipc_request("eth_estimateGas", [{"from": signer_addr, "data": binary}], name)
-        self.contract_addr = send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "gas": gas_est['result'], "data": binary}], name)['result']['contractAddress']
+        gas_est = await send_ipc_request("eth_estimateGas", [{"from": signer_addr, "data": binary}], self.name)
+        self.contract_addr = await send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "gas": gas_est['result'], "data": binary}], self.name)
+        self.contract_addr = self.contract_addr['result']['contractAddress']
 
-    def call_raw(self, method_name, args, name):
-        signer_addr = send_ipc_request("eth_coinbase", [], name)['result']
+    async def call_raw(self, method_name, args, name):
+        signer_addr = await send_ipc_request("eth_coinbase", [], name)
+        signer_addr = signer_addr['result']
         encoded_method_sig = self._encode_method_sig(method_name)
         method_abi = self._get_method_abi(method_name)
         encoded_args = self._encode_args(method_abi, args)
         call_data = "0x" + encoded_method_sig + encoded_args
 
         if self.__is_pure(method_name) or self.__is_view(method_name):
-            return send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"], name)
+            return await send_ipc_request("eth_call", [{"to": self.contract_addr, "data": call_data},  "latest"], name)
         else:
-            gas_est = send_ipc_request("eth_estimateGas", [{"from": signer_addr, "to": self.contract_addr, "data": call_data}], name)
+            gas_est = await send_ipc_request("eth_estimateGas", [{"from": signer_addr, "to": self.contract_addr, "data": call_data}], name)
             if 'error' in gas_est:
                 return gas_est
-            return send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}], name)
+            return await send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "to": self.contract_addr, "gas": gas_est['result'], "data": call_data}], name)
 
-    def call(self, method_name, args, name):
-        call_result = self.call_raw(method_name, args, name)
+    async def call(self, method_name, args, name):
+        call_result = await self.call_raw(method_name, args, name)
         if 'result' in call_result and not isinstance(call_result['result'], dict): #read
             return self._decode_returns(self._get_method_abi(method_name), call_result['result'])
         elif 'result' in call_result and len(call_result['result']['logs']) != 0: #write with event
@@ -245,7 +256,7 @@ def encode_address(string):
 def decode_address(string):
     return "0x" + string[24:64]
 
-def send_ipc_request(method, params, name):
+async def send_ipc_request(method, params, name):
     global id_count
     id_count += 1
 
@@ -263,19 +274,21 @@ def send_ipc_request(method, params, name):
 
 
     command = 'echo \'{"jsonrpc":"2.0","method":"' + method + '","params":' + param_string + ',"id":' + str(id_count) + '}\' | nc -U -q 1 ./' + name + '/geth.ipc'
-    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    output = p.stdout.read().decode('utf-8')
+    proc = await asyncio.create_subprocess_shell(command, stdout=asyncio.subprocess.PIPE)
+
+    stdout, _ = await proc.communicate()
+
+    output = stdout.decode()
 
     #if a transaction is sent, get receipt of returned hash
     if method == "eth_sendTransaction":
         while True:
             if "error" in json.loads(output):
                 return json.loads(output)
-            temp = send_ipc_request("eth_getTransactionReceipt", [json.loads(output)['result']], name)
+            temp = await send_ipc_request("eth_getTransactionReceipt", [json.loads(output)['result']], name)
             if temp['result'] != None:
                 return temp
             id_count -= 1 #don't increment id while waiting for transaction to show up
-            time.sleep(0.1)
 
     return json.loads(output)
 

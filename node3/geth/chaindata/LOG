@@ -1,18 +1,18 @@
 =============== Dec 8, 2022 (+07) ===============
-10:26:18.245070 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:26:18.263723 db@open opening
-10:26:18.265647 version@stat F·[] S·0B[] Sc·[]
-10:26:18.273480 db@janitor F·2 G·0
-10:26:18.273644 db@open done T·9.8654ms
-10:26:18.360934 db@close closing
-10:26:18.361293 db@close done T·357.5µs
+20:51:39.042570 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:51:39.061371 db@open opening
+20:51:39.063057 version@stat F·[] S·0B[] Sc·[]
+20:51:39.071501 db@janitor F·2 G·0
+20:51:39.071651 db@open done T·10.2231ms
+20:51:39.144963 db@close closing
+20:51:39.145424 db@close done T·455.7µs
 =============== Dec 8, 2022 (+07) ===============
-10:26:19.661094 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:26:19.661511 version@stat F·[] S·0B[] Sc·[]
-10:26:19.661696 db@open opening
-10:26:19.662323 journal@recovery F·1
-10:26:19.676568 journal@recovery recovering @1
-10:26:19.686456 memdb@flush created L0@2 N·19 S·1KiB "%\x9b'..\xd5\x126,v5":"\xe1\x84\xe2..$\xe1L,v7"
-10:26:19.698257 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
-10:26:19.756688 db@janitor F·3 G·0
-10:26:19.756732 db@open done T·94.7951ms
+20:51:40.455133 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:51:40.455838 version@stat F·[] S·0B[] Sc·[]
+20:51:40.456038 db@open opening
+20:51:40.456373 journal@recovery F·1
+20:51:40.472152 journal@recovery recovering @1
+20:51:40.502970 memdb@flush created L0@2 N·19 S·1KiB "%\x9b'..\xd5\x126,v5":"\xe1\x84\xe2..$\xe1L,v7"
+20:51:40.523588 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
+20:51:40.594695 db@janitor F·3 G·0
+20:51:40.594855 db@open done T·138.7696ms
