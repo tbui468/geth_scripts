@@ -10,6 +10,7 @@ contract Ballot {
 
     event VoteGranted(bytes32 msg, address addr);
     event Voted(bytes32 msg, address addr);
+    event TieBroken(bytes32 msg);
 
     Proposal[] public proposals;
     mapping(address=>bool) private addressVoted;
@@ -23,6 +24,41 @@ contract Ballot {
         }
         organizer = msg.sender;
         voteEndTime = block.timestamp + _duration;
+    }
+
+    
+    function breakTie(uint _propIdx) public {
+        require(block.timestamp >= voteEndTime);
+        require(organizer == msg.sender);
+        uint mostIdx = 0;
+        for (uint i = 1; i < proposals.length; i++) {
+            if (proposals[i].votes > proposals[mostIdx].votes) {
+                mostIdx = i; 
+            }
+        }
+
+        uint highestVotes = proposals[mostIdx].votes;
+        require(proposals[_propIdx].votes == highestVotes);
+        proposals[_propIdx].votes++;
+        emit TieBroken("Organizer broke tie");
+    }
+
+    function winner() public view returns (bytes32) {
+        require(block.timestamp >= voteEndTime);
+        uint mostIdx = 0;
+        for (uint i = 1; i < proposals.length; i++) {
+            if (proposals[i].votes > proposals[mostIdx].votes) {
+                mostIdx = i; 
+            }
+        }
+
+        uint highestVotes = proposals[mostIdx].votes;
+        for (uint i = 0; i < proposals.length; i++) {
+            if (i == mostIdx) continue;
+            require(proposals[i].votes != highestVotes);
+        }
+
+        return proposals[mostIdx].name;
     }
 
     function grantVotingRight(address _address) public {

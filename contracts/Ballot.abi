@@ -25,6 +25,20 @@
         "internalType": "bytes32",
         "name": "msg",
         "type": "bytes32"
+      }
+    ],
+    "name": "TieBroken",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs":
+    [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "msg",
+        "type": "bytes32"
       },
       {
         "indexed": false,
@@ -55,6 +69,20 @@
     ],
     "name": "Voted",
     "type": "event"
+  },
+  {
+    "inputs":
+    [
+      {
+        "internalType": "uint256",
+        "name": "_propIdx",
+        "type": "uint256"
+      }
+    ],
+    "name": "breakTie",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs":
@@ -119,6 +147,20 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "winner",
+    "outputs":
+    [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",

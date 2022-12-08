@@ -13,18 +13,24 @@ Note: Mining can be used for private networks, but mainnet
 
 **********************Foundations*****************************
 Finish reading Bitcoin and Cryptocurrency technologies
-Watch video on building a mini-cryptocurrency in Ruby
-Without referring to video, build a mini-cryptocurrency in Python
+Attempt at building mini-cryptocurrency in python
     try using hash functions/dsa from eth_utils so that we can skip the geth signers
+Watch video on building a mini-cryptocurrency in Ruby
+Fix mini-cryptocurrency based on video, and write up tutorial
+    use async/await if necessary for node connections
+    Write up post on Notion (or other platform)
 Ethereum in 25 minutes video
 Mastering Ethereum Book
 Build a mini-ethereum blockchain/virtual machine in python
 Remake mini-ethereum to use proof-of-stake
+Write up mini-ethereum in Notion
 
 ***********************Structured Smart Contract Courses********************************
 CryptoZombies
     pw: catdoglion
+    basic smart contracts
 Ethernauts
+    security
 
 ***********************Proof-of-Stake*********************************
 Make a new Prysm project
@@ -33,27 +39,13 @@ Make a prysm beacon node
 Make a validator
 
 **************************Ballot Contract*******************************
-Read this for a run-down on async/await with python
-    https://realpython.com/async-io-python/
-async await for certain function calls
-    giving all accounts voting rights can all be done asynchronously
-    voting of all users can be done asynchronously
-    network startup and shutdown can probably also be called using await/async
-        this would simplify our testing loop significantly - running a single
-        script will start the network, run the tests and then shutdown the network
-
-Only need to be asynchronous when redeeming transaction rececipts to get events emitted
-    all other calls should return immediately (but could make them asynchronous too)
-
 Make more signers - 2 miners and 8 non-mining nodes
 
-Time to end vote and reveal results - should be set in constructor
-    If there's a tie between 2 or more proposals, then owner can cast a vote
-    Only allow owner vote if there's a tie at the end, and the vote must be on one of the tied proposals
 Voters can delegate vote to another account (that must also have voting rights already)
     event for when delegation is successful
 Check for other features in Ballot contract
 Test theirs and test mine
+Interact with Ballot using MetaMask
 
 Interact with more complex contract
     Ballot Contract - write python tests for Ballot functionality
@@ -72,17 +64,11 @@ Staking-as-a-Service DAO
 Uniswap Defi
     Implement uniswap paper(s)
 
-******************Interact with Ballot Contract using Metamask**********
-May need to set up basic javascript frontend for this
-
 ******************Use eth_utils to manually sign transactions***********
 Bypass the geth accounts stuff, and understand what metamask is doing behind the scenes
     probably a good idea to undestand (at least understand usage) of one of the cryptographic primitives
 
     digital signatures in ethereum - does it use ECDSA?
-
-******************Set up private proof-of-stake network******************
-Use Geth and Prysm
 
 ****************************Oracles**************************************
 
