@@ -26,12 +26,27 @@ CryptoZombies
     pw: catdoglion
 Ethernauts
 
+***********************Proof-of-Stake*********************************
+Make a new Prysm project
+Make a geth executaion node
+Make a prysm beacon node
+Make a validator
+
 **************************Ballot Contract*******************************
-!!!Just start the miners in the python script itself
+Read this for a run-down on async/await with python
+    https://realpython.com/async-io-python/
+async await for certain function calls
+    giving all accounts voting rights can all be done asynchronously
+    voting of all users can be done asynchronously
+    network startup and shutdown can probably also be called using await/async
+        this would simplify our testing loop significantly - running a single
+        script will start the network, run the tests and then shutdown the network
+
+Only need to be asynchronous when redeeming transaction rececipts to get events emitted
+    all other calls should return immediately (but could make them asynchronous too)
 
 Make more signers - 2 miners and 8 non-mining nodes
 
-Event for when user votes successfully
 Time to end vote and reveal results - should be set in constructor
     If there's a tie between 2 or more proposals, then owner can cast a vote
     Only allow owner vote if there's a tie at the end, and the vote must be on one of the tied proposals
@@ -39,9 +54,6 @@ Voters can delegate vote to another account (that must also have voting rights a
     event for when delegation is successful
 Check for other features in Ballot contract
 Test theirs and test mine
-
-Look into async and await in python to do the json-rpc requests to the blockchain
-    using a while loop to check for events is quite hacky
 
 Interact with more complex contract
     Ballot Contract - write python tests for Ballot functionality

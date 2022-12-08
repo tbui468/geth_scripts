@@ -275,6 +275,7 @@ def send_ipc_request(method, params, name):
             if temp['result'] != None:
                 return temp
             id_count -= 1 #don't increment id while waiting for transaction to show up
+            time.sleep(0.1)
 
     return json.loads(output)
 

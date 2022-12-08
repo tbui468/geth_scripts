@@ -6,6 +6,11 @@
         "internalType": "bytes32[]",
         "name": "_props",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_duration",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -28,7 +33,7 @@
         "type": "address"
       }
     ],
-    "name": "Test",
+    "name": "VoteGranted",
     "type": "event"
   },
   {
@@ -48,7 +53,7 @@
         "type": "address"
       }
     ],
-    "name": "VotingRightGranted",
+    "name": "Voted",
     "type": "event"
   },
   {
@@ -103,6 +108,20 @@
     "name": "vote",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voteEndTime",
+    "outputs":
+    [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]
