@@ -39,10 +39,24 @@ Make a prysm beacon node
 Make a validator
 
 **************************Ballot Contract*******************************
-Make more signers - 2 miners and 8 non-mining nodes
+Make more signers - 2 miners and 8 non-mining nodes (need a lot to test delegating votes)
 
-Voters can delegate vote to another account (that must also have voting rights already)
-    event for when delegation is successful
+All the tests are using the same contract right now!!!! This is not what we want!
+    Need to compile only once, BUT deploy once for each test
+
+Problem with block.timestamp making testing difficult/slow...
+    just remove it from contract for now - make a modifier called inTimeFrame and just comment out lines in there
+    this will make iteration a lot faster
+
+Run multiple tests concurrently using coroutines
+    voting right test
+    tied result test
+    voted delegatee test
+    not voted delegatee test
+    !!!Should only compile contract one time for all tests to avoid potentially reading
+        to Ballot.abi/bin while a different coroutine is writing to it
+
+
 Check for other features in Ballot contract
 Test theirs and test mine
 Interact with Ballot using MetaMask
@@ -51,6 +65,11 @@ Interact with more complex contract
     Ballot Contract - write python tests for Ballot functionality
 
 ***********************Ideas****************************
+Basic Exchange
+    Order books that can record asks/bids and the account
+    Limit orders
+    Contract deployer gets a small cut
+
 KickStarter DAO
     Send money to account
     if amount reach, project is funded

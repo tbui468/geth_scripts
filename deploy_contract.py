@@ -8,10 +8,11 @@ id_count = 0
 class Signer():
     def __init__(self, name):
         self.name = name #either node1, node2 or node3
+        self.addr = None
 
     async def deploy(self, sol_file, args):
-        c = Contract(sol_file, args, self.name)
-        await c.deploy()
+        c = Contract(sol_file, args)
+        await c.deploy(self.name)
         return c
 
     async def call(self, contract, method, args):
@@ -21,20 +22,23 @@ class Signer():
         return await contract.call_raw(method, args, self.name)
 
     async def get_address(self):
+        if self.addr != None:
+            return self.addr
         r = await send_ipc_request("eth_coinbase", [], self.name)
-        return r['result']
+        self.addr = r['result']
+        return self.addr
+
+async def compile_contract(name):
+    command = "cd contracts && ./solc " + name + " --bin -o . --overwrite --abi --pretty-json"
+    await asyncio.create_subprocess_shell(command)
 
 class Contract():
-    def __init__(self, contract, args, name):
+    def __init__(self, contract, args):
         self.contract = contract
         self.args = args
-        self.name = name
 
-    async def deploy(self):
-        command = "cd contracts && ./solc " + self.contract + " --bin -o . --overwrite --abi --pretty-json"
-        await asyncio.create_subprocess_shell(command)
-
-        signer_addr = await send_ipc_request("eth_coinbase", [], self.name)
+    async def deploy(self, name):
+        signer_addr = await send_ipc_request("eth_coinbase", [], name)
         signer_addr = signer_addr['result']
 
         binary = "0x"
@@ -49,8 +53,8 @@ class Contract():
         constructor_abi = self._get_constructor_abi()
         binary += self._encode_args(constructor_abi, self.args)
 
-        gas_est = await send_ipc_request("eth_estimateGas", [{"from": signer_addr, "data": binary}], self.name)
-        self.contract_addr = await send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "gas": gas_est['result'], "data": binary}], self.name)
+        gas_est = await send_ipc_request("eth_estimateGas", [{"from": signer_addr, "data": binary}], name)
+        self.contract_addr = await send_ipc_request("eth_sendTransaction", [{"from": signer_addr, "gas": gas_est['result'], "data": binary}], name)
         self.contract_addr = self.contract_addr['result']['contractAddress']
 
     async def call_raw(self, method_name, args, name):

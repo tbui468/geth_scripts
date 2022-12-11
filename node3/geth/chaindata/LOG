@@ -1,18 +1,18 @@
-=============== Dec 8, 2022 (+07) ===============
-22:20:10.003039 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-22:20:10.022295 db@open opening
-22:20:10.025404 version@stat F·[] S·0B[] Sc·[]
-22:20:10.033228 db@janitor F·2 G·0
-22:20:10.033329 db@open done T·10.945ms
-22:20:10.110780 db@close closing
-22:20:10.110998 db@close done T·215.1µs
-=============== Dec 8, 2022 (+07) ===============
-22:20:11.345079 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-22:20:11.345536 version@stat F·[] S·0B[] Sc·[]
-22:20:11.345701 db@open opening
-22:20:11.345940 journal@recovery F·1
-22:20:11.361966 journal@recovery recovering @1
-22:20:11.370691 memdb@flush created L0@2 N·19 S·1KiB "%\x9b'..\xd5\x126,v5":"\xe1\x84\xe2..$\xe1L,v7"
-22:20:11.381027 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
-22:20:11.435196 db@janitor F·3 G·0
-22:20:11.435409 db@open done T·89.6123ms
+=============== Dec 11, 2022 (+07) ===============
+16:52:32.735491 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:52:32.753428 db@open opening
+16:52:32.755386 version@stat F·[] S·0B[] Sc·[]
+16:52:32.761900 db@janitor F·2 G·0
+16:52:32.762046 db@open done T·8.566ms
+16:52:32.839068 db@close closing
+16:52:32.839480 db@close done T·405.9µs
+=============== Dec 11, 2022 (+07) ===============
+16:52:34.160430 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:52:34.161136 version@stat F·[] S·0B[] Sc·[]
+16:52:34.161324 db@open opening
+16:52:34.161803 journal@recovery F·1
+16:52:34.182190 journal@recovery recovering @1
+16:52:34.197008 memdb@flush created L0@2 N·19 S·1KiB "%\x9b'..\xd5\x126,v5":"\xe1\x84\xe2..$\xe1L,v7"
+16:52:34.214031 version@stat F·[1] S·1KiB[1KiB] Sc·[0.25]
+16:52:34.297677 db@janitor F·3 G·0
+16:52:34.297878 db@open done T·136.4936ms

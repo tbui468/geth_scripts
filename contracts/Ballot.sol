@@ -3,6 +3,13 @@ pragma solidity ^0.8.17;
 
 contract Ballot {
 
+    struct Voter {
+        bool voted;
+        bool hasVotingRight;
+        uint weight;
+        uint votedPropIdx;
+    }
+
     struct Proposal {
         bytes32 name;
         uint votes;
@@ -13,8 +20,7 @@ contract Ballot {
     event TieBroken(bytes32 msg);
 
     Proposal[] public proposals;
-    mapping(address=>bool) private addressVoted;
-    mapping(address=>bool) private addressHasVotingRight;
+    mapping(address=>Voter) private voters;
     address private immutable organizer;
     uint public immutable voteEndTime;
 
@@ -26,6 +32,21 @@ contract Ballot {
         voteEndTime = block.timestamp + _duration;
     }
 
+    function delegate(address _delegatee) public {
+        Voter storage delegator = voters[msg.sender];
+        Voter storage delegatee = voters[_delegatee];
+
+        require(block.timestamp < voteEndTime);
+        require(delegator.hasVotingRight);
+        require(!delegator.voted);
+        require(delegatee.hasVotingRight);
+
+        if (delegatee.voted) {
+            proposals[delegatee.votedPropIdx].votes += delegator.weight;
+        } else {
+            delegatee.weight += delegator.weight;
+        }
+    }
     
     function breakTie(uint _propIdx) public {
         require(block.timestamp >= voteEndTime);
@@ -64,16 +85,18 @@ contract Ballot {
     function grantVotingRight(address _address) public {
         require(organizer == msg.sender);
         require(block.timestamp < voteEndTime);
-        addressHasVotingRight[_address] = true;
+        voters[_address] = Voter(false, true, 1, 0);
         emit VoteGranted("Voting right granted to:", _address);
     }
 
     function vote(uint _propIdx) public {
-        require(addressHasVotingRight[msg.sender] == true);
-        require(addressVoted[msg.sender] == false);
+        Voter storage voter = voters[msg.sender];
+        require(voter.hasVotingRight);
+        require(!voter.voted);
         require(block.timestamp < voteEndTime);
-        proposals[_propIdx].votes++;
-        addressVoted[msg.sender] = true;
+        proposals[_propIdx].votes += voter.weight;
+        voter.votedPropIdx = _propIdx;
+        voter.voted = true;
         emit Voted("Address voted", msg.sender);
     }
 }
