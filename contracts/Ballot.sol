@@ -32,11 +32,15 @@ contract Ballot {
         voteEndTime = block.timestamp + _duration;
     }
 
-    function delegate(address _delegatee) public {
+    modifier inTimeFrame() {
+        //require(block.timestamp < voteEndTime);
+        _;
+    }
+
+    function delegate(address _delegatee) public inTimeFrame {
         Voter storage delegator = voters[msg.sender];
         Voter storage delegatee = voters[_delegatee];
 
-        require(block.timestamp < voteEndTime);
         require(delegator.hasVotingRight);
         require(!delegator.voted);
         require(delegatee.hasVotingRight);
@@ -48,8 +52,7 @@ contract Ballot {
         }
     }
     
-    function breakTie(uint _propIdx) public {
-        require(block.timestamp >= voteEndTime);
+    function breakTie(uint _propIdx) public inTimeFrame {
         require(organizer == msg.sender);
         uint mostIdx = 0;
         for (uint i = 1; i < proposals.length; i++) {
@@ -65,7 +68,7 @@ contract Ballot {
     }
 
     function winner() public view returns (bytes32) {
-        require(block.timestamp >= voteEndTime);
+        //require(block.timestamp >= voteEndTime);
         uint mostIdx = 0;
         for (uint i = 1; i < proposals.length; i++) {
             if (proposals[i].votes > proposals[mostIdx].votes) {
@@ -82,18 +85,16 @@ contract Ballot {
         return proposals[mostIdx].name;
     }
 
-    function grantVotingRight(address _address) public {
+    function grantVotingRight(address _address) public inTimeFrame {
         require(organizer == msg.sender);
-        require(block.timestamp < voteEndTime);
         voters[_address] = Voter(false, true, 1, 0);
         emit VoteGranted("Voting right granted to:", _address);
     }
 
-    function vote(uint _propIdx) public {
+    function vote(uint _propIdx) public inTimeFrame {
         Voter storage voter = voters[msg.sender];
         require(voter.hasVotingRight);
         require(!voter.voted);
-        require(block.timestamp < voteEndTime);
         proposals[_propIdx].votes += voter.weight;
         voter.votedPropIdx = _propIdx;
         voter.voted = true;
