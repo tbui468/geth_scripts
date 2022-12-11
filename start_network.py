@@ -48,7 +48,8 @@ def start_node(name, port, authrpc_port, account, http, mine):
         command += " --http "
     command += " --bootnodes " + boot_id + " --networkid 1 "
     if mine:
-        command += " --mine --miner.threads=1 "
+        #command += " --mine --miner.threads=1 "
+        command += " --mine "
     if not http:
         command += " --unlock " + account + " --password " + name + "/password.txt"
     command += " &"
@@ -63,6 +64,6 @@ start_node("node4", "30314", "30315", "0x58BC03D864625fd85252c8056D597CB1a670208
 start_node("node5", "30316", "30317", "0x0a8AfbC6F05D1091186f6963211Fc6E90d3C0467", False, False)
 start_node("node6", "30318", "30319", "0xd3138Bf958DAe29c8b6F9C53e1fd7893fec4E17a", False, False)
 start_node("node7", "30320", "30321", "0x8FfCB4286A874D3249cb2B14b5B31AaAcFD90ba9", False, False)
-start_node("node8", "30322", "30323", "0x56029194867199Bf7e5e5BaF60B43CFc84135991", False, True)
+start_node("node8", "30322", "30323", "0x56029194867199Bf7e5e5BaF60B43CFc84135991", False, False)
 start_node("node9", "30324", "30325", "0x7cfCa091bF7c7D62D1F13921394ABD53F366a144", False, True)
 

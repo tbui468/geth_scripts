@@ -39,10 +39,6 @@ Make a prysm beacon node
 Make a validator
 
 **************************Ballot Contract*******************************
-Make more signers - 2 miners and 8 non-mining nodes (need a lot to test delegating votes)
-
-Switch to clique (proof-of-authority) to decrease testing time even further
-
 Test delegating votes
 
 Check for other features in Ballot contract

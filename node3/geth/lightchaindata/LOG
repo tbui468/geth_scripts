@@ -1,8 +1,8 @@
 =============== Dec 11, 2022 (+07) ===============
-18:00:06.032138 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-18:00:06.052882 db@open opening
-18:00:06.054244 version@stat F·[] S·0B[] Sc·[]
-18:00:06.062271 db@janitor F·2 G·0
-18:00:06.062395 db@open done T·9.4524ms
-18:00:06.145680 db@close closing
-18:00:06.146004 db@close done T·317.8µs
+18:28:34.562380 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+18:28:34.581493 db@open opening
+18:28:34.583741 version@stat F·[] S·0B[] Sc·[]
+18:28:34.592003 db@janitor F·2 G·0
+18:28:34.592094 db@open done T·10.5251ms
+18:28:34.667875 db@close closing
+18:28:34.668056 db@close done T·177.6µs

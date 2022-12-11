@@ -13,10 +13,15 @@
         "berlinBlock": 0,
         "londonBlock": 0,
         "arrowGlacierBlock": 0,
-        "grayGlacierBlock": 0
+        "grayGlacierBlock": 0,
+        "clique": {
+            "period": 1,
+            "epoch": 10
+        }
     },
     "difficulty": "0x1",
     "gasLimit": "1000000000000000000",
+    "extradata": "0x00000000000000000000000000000000000000000000000000000000000000007cfCa091bF7c7D62D1F13921394ABD53F366a1440000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
     "alloc": {
         "7Af80e614E7BfdD635f94cddbB9e80e269E6070a": { "balance": "1000000000000000000000" },
         "D8b3A2eBa89Bc06A2bDBDFa41da277Ac2ace4B7B": { "balance": "1000000000000000000000" },
