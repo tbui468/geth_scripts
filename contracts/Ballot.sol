@@ -8,6 +8,7 @@ contract Ballot {
         bool hasVotingRight;
         uint weight;
         uint votedPropIdx;
+        address delegatee;
     }
 
     struct Proposal {
@@ -37,13 +38,22 @@ contract Ballot {
         _;
     }
 
-    function delegate(address _delegatee) public inTimeFrame {
+    function delegate(address _delegatee) external inTimeFrame {
+        require(msg.sender != _delegatee, "Can't delegate to self");
         Voter storage delegator = voters[msg.sender];
         Voter storage delegatee = voters[_delegatee];
 
         require(delegator.hasVotingRight);
         require(!delegator.voted);
         require(delegatee.hasVotingRight);
+
+        address current = delegatee.delegatee;
+        while (current != address(0)) {
+            require(current != msg.sender, "Circular delegation");
+            current = voters[current].delegatee;
+        }
+
+        delegator.delegatee = _delegatee;
 
         if (delegatee.voted) {
             proposals[delegatee.votedPropIdx].votes += delegator.weight;
@@ -52,7 +62,7 @@ contract Ballot {
         }
     }
     
-    function breakTie(uint _propIdx) public inTimeFrame {
+    function breakTie(uint _propIdx) external inTimeFrame {
         require(organizer == msg.sender);
         uint mostIdx = 0;
         for (uint i = 1; i < proposals.length; i++) {
@@ -67,7 +77,7 @@ contract Ballot {
         emit TieBroken("Organizer broke tie");
     }
 
-    function winner() public view returns (bytes32) {
+    function winner() external view returns (bytes32) {
         //require(block.timestamp >= voteEndTime);
         uint mostIdx = 0;
         for (uint i = 1; i < proposals.length; i++) {
@@ -85,13 +95,13 @@ contract Ballot {
         return proposals[mostIdx].name;
     }
 
-    function grantVotingRight(address _address) public inTimeFrame {
+    function grantVotingRight(address _address) external inTimeFrame {
         require(organizer == msg.sender);
-        voters[_address] = Voter(false, true, 1, 0);
+        voters[_address] = Voter(false, true, 1, 0, address(0));
         emit VoteGranted("Voting right granted to:", _address);
     }
 
-    function vote(uint _propIdx) public inTimeFrame {
+    function vote(uint _propIdx) external inTimeFrame {
         Voter storage voter = voters[msg.sender];
         require(voter.hasVotingRight);
         require(!voter.voted);

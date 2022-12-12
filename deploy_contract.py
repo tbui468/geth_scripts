@@ -7,7 +7,7 @@ id_count = 0
 
 class Signer():
     def __init__(self, name):
-        self.name = name #either node1, node2 or node3
+        self.name = name #either node0, node1, etc
         self.addr = None
 
     async def deploy(self, sol_file, args):

@@ -1,5 +1,4 @@
 ************************Read************************
-Read Bitcoin and Cryptocurrency technologies - foundation
 Messari BlockChain report - business side of things
 Reread Mastering Bitcoin - technical details/foundation
 Reread Mastering Ethereum - technical details/foundation
@@ -12,7 +11,6 @@ Note: Mining can be used for private networks, but mainnet
     Consider running Prysm alongside Geth for the private network
 
 **********************Foundations*****************************
-Finish reading Bitcoin and Cryptocurrency technologies
 Attempt at building mini-cryptocurrency in python
     try using hash functions/dsa from eth_utils so that we can skip the geth signers
 Watch video on building a mini-cryptocurrency in Ruby
@@ -39,14 +37,14 @@ Make a prysm beacon node
 Make a validator
 
 **************************Ballot Contract*******************************
-Test delegating votes
+Node5 jsonrpc js console doesn't work for some reason
+Test with Metamask
 
-Check for other features in Ballot contract
-Test theirs and test mine
-Interact with Ballot using MetaMask
-
-Interact with more complex contract
-    Ballot Contract - write python tests for Ballot functionality
+Simple Auction
+Blind Auction
+Safe Remote Purchase
+Simple Payment Channel
+Prysm for proof-of-stake
 
 ***********************Ideas****************************
 Basic Exchange
